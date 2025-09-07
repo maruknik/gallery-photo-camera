@@ -44,6 +44,20 @@ const addCrime = (db, title, description, imageUri) => {
   });
 };
 
+const seedDatabase = async (db) => {
+  await createTable(db);
+  const crimesToSeed = [
+    { title: 'Крадіжка', description: 'Викрадення гаманця', imageUri: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Crime1' },
+    { title: 'Хуліганство', description: 'Пошкодження майна', imageUri: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=Crime2' },
+    { title: 'ДТП', description: 'Порушення правил дорожнього руху', imageUri: 'https://via.placeholder.com/150/00FF00/FFFFFF?text=Crime3' },
+  ];
+
+  for (const crime of crimesToSeed) {
+    await addCrime(db, crime.title, crime.description, crime.imageUri);
+  }
+  console.log('Database seeded with example crimes.');
+};
+
 const getCrimes = (db) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -67,4 +81,4 @@ const getCrimes = (db) => {
   });
 };
 
-export { getDB, createTable, addCrime, getCrimes };
+export { getDB, createTable, addCrime, getCrimes, seedDatabase };

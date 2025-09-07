@@ -1,0 +1,3 @@
+export const CLOUDINARY_CLOUD_NAME = 'db7jhj6pa';
+export const CLOUDINARY_API_KEY = '742737484946968';
+export const CLOUDINARY_API_SECRET = 'YOUR_API_SECRET';
