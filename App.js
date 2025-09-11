@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, FlatList, Button, Platform } from 'react-native';
+import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { getDB, createTable, getCrimes, seedDatabase } from './database';
 import { uploadImageToCloudinary } from './ImageUpload';
@@ -9,6 +10,7 @@ export default function App() {
   const [crimes, setCrimes] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -18,13 +20,22 @@ export default function App() {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
       }
+
+      let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
+      if (locationStatus !== 'granted') {
+        alert('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setCurrentLocation(location.coords);
     })();
 
     const initializeDB = async () => {
       const database = getDB();
       setDb(database);
       await createTable(database);
-      await seedDatabase(database); // Seed database for testing
+      await seedDatabase(database); 
       loadCrimes(database);
     };
     initializeDB();
@@ -40,7 +51,7 @@ export default function App() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      setUploadedImageUrl(null); // Clear previous upload URL
+      setUploadedImageUrl(null); 
     }
   };
 
@@ -51,6 +62,11 @@ export default function App() {
       if (imageUrl) {
         setUploadedImageUrl(imageUrl);
         console.log('Uploaded image secure URL:', imageUrl);
+        // Add crime to database with location
+        if (currentLocation && db) {
+          await addCrime(db, 'Нове правопорушення', 'Опис нового правопорушення', imageUrl, currentLocation.latitude, currentLocation.longitude);
+          loadCrimes(db);
+        }
       } else {
         console.error('Image upload failed.');
       }

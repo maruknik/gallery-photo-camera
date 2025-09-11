@@ -25,6 +25,8 @@ const CrimeList = () => {
     <View style={styles.crimeItem}>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>
+      <Text style={styles.location}>Широта: {item.latitude}</Text>
+      <Text style={styles.location}>Довгота: {item.longitude}</Text>
       {item.imageUri && <Image source={{ uri: item.imageUri }} style={styles.image} />}
     </View>
   );
@@ -79,6 +81,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 10,
+  },
+  location: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 5,
   },
   image: {
     width: '100%',
